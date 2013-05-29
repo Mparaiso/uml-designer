@@ -1,0 +1,88 @@
+/**
+ * Feuille de styles pour uml designer.
+ * @copyrights M.PARAISO <mparaiso@oneline.fr>
+ * All rights reserved.
+ */
+@classPadding: 5px;
+@classBorder: 1px solid #BBB;
+@canvasBgColor: #F9F9F9;
+@classBgColorHover: #CCC;
+@classBgColor: #DDD;
+@privateColor: #5A5A5A;
+@publicColor: #0A0A0A;
+.uml-canvas {
+  font-family: "Lucida Console", Monaco, monospace, sans-serif;
+  font-size: 100%;
+  position: relative;
+  width: 100%;
+  min-height: 500px;
+  background-color: @canvasBgColor;
+  .uml-class {
+    .draggie:hover {
+
+    }
+    &:hover {
+      background-color: @classBgColorHover;
+    }
+    cursor: move;
+    padding: 0;
+    border-collapse: collapse;
+    background-color: @classBgColor;
+    position: absolute;
+    display: inline-block;
+    border: @classBorder;
+    width: auto;
+    .uml-class-handle {
+    }
+    .uml-class-inner {
+      cursor: auto;
+      background-color: #FCFCFC;
+      border: @classBorder;
+      .uml-header {
+        font-weight: bold;
+        padding: @classPadding;
+        border-bottom: @classBorder;
+      }
+      ul {
+        list-style: none;
+        list-style-type: none;
+        padding-left: 0;
+      }
+      li {
+        .uml-cell {
+          input[type=text] {
+            width: auto;
+          }
+        }
+
+        &.uml-public {
+          color: @publicColor;
+        }
+        &.uml-private {
+          color: @privateColor;
+        }
+        /**
+        &.uml-private:before {
+          content: "-";
+        }
+        &.uml-public:before {
+          content: "+";
+        }
+        &.uml-protected:before {
+          content: "#"
+        }
+        **/
+      }
+      .uml-property-list {
+        padding: @classPadding;
+        border-bottom: @classBorder;
+
+      }
+      .uml-method-list {
+        padding: @classPadding;
+
+      }
+    }
+
+  }
+}
