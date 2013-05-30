@@ -28,6 +28,30 @@
 
 }
 
+.front {
+  z-index: 10;
+}
+
+.back {
+  z-index: 0;
+}
+
+.uml-left {
+  width: 80%;
+  float: left;
+}
+
+.uml-float-none {
+display:block;
+  float: none;
+}
+
+.uml-right {
+  width: 200px;
+  float: right;
+}
+
+/// Designer Canvas
 .uml-canvas {
   .uml-font;
   position: relative;
@@ -36,15 +60,23 @@
   background-color: @canvasBgColor;
   input {
     .uml-font;
+    padding: 0 2px;
     border-collapse: collapse;
     border: 1px solid #AAA;
   }
+  /// CLASS CSS
   .uml-class {
-    .draggie:hover {
 
-    }
     &:hover {
       background-color: @classBgColorHover;
+    }
+    &:hover input[type=button] {
+      opacity: 1;
+    }
+    input[type=button] {
+      opacity: 0;
+      transition: opacity .2s;
+      -webkit-transition: opacity .2s;
     }
     cursor: move;
     padding: 0;
@@ -64,7 +96,7 @@
       .uml-header {
         font-weight: bold;
         padding: @classPadding;
-        float:left;
+        float: left;
       }
       .uml-class-select {
         padding: @classPadding;
@@ -76,11 +108,17 @@
         padding-left: 0;
       }
       li {
-        .uml-cell {
-          input {
-            margin-left: -4px;
-            margin-bottom: -2px;
-          }
+        .uml-cell-value {
+          float: left;
+          display: inline-block;
+        }
+        .uml-cell:hover {
+          border: 1px solid #AAA;
+          margin: -1px;
+        }
+        .uml-remove {
+          float: right;
+          display: inline-block;
         }
 
         &.uml-public {
@@ -96,7 +134,7 @@
       }
 
       .uml-method-list {
-        width: 150px;
+        // width: 150px;
         padding: @classPadding;
       }
     }
@@ -106,5 +144,4 @@
 
 .clear {
   clear: both;
-  border-bottom: @classBorder;
 }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-US" ng-app="umlDesigner">
+<html lang="en-US" ng-app="UmlDesigner">
 <head>
     <meta charset="UTF-8">
     <title>UML DESIGNER</title>
@@ -16,16 +16,103 @@
 </head>
 <body>
 <div id="main">
-    <form class='uml-interface'>
+    <form class='uml-interface' ng-controller="MenuController">
         <fieldset>
             <legend>Interface</legend>
-            <input type="button" value="Add class" id="add-class" name="add-class"/>
-            <input type="button" value="Delete selected" name="delete-class" id="delete-class"/>
+            <input type="button" value="Add class" id="add-class" name="add-class" ng-click="add()"/>
+            <input type="button" value="Delete selected" name="delete-class" id="delete-class"
+                   ng-click="delete()"/>
+            <input type="button" value="Delete all" ng-click="deleteAll()"/>
+            <input type="button" value="Inverse Selection" ng-click='inverseSelection()'/>
+            <input type="button" value="Toggle Methods" ng-click='toggleMethods()'/>
+            <input type="button" value="Toggle Properties" ng-click='toggleProperties()'/>
         </fieldset>
     </form>
-    <div id="uml-canvas" class="uml-canvas">
+    <div ng-controller="CanvasController" class="uml-left">
+        <div id="uml-canvas" class="uml-canvas uml-float-none"
+             data-uml-canvas ng-include="'class-partial.html'">
+        </div>
+    </div>
+    <div ng-controller="ClassEditController" class="uml-right">
+        <div ng-include="'class-edit-partial.html'"></div>
     </div>
 </div>
+</div>
+<!-- templates -->
+<!-- class edit partial -->
+<script type="text/ng-template" id="class-edit-partial.html">
+    <div class="uml-class-edit">
+        <h3> {{classService.getLastSelected().type}}</h3>
+        <h4>Relationships</h4>
 
+        <div>
+            <input type="button" value="Add relationship"
+                   ng-click="addRelationShip(classService.getLastSelected())"/>
+        </div>
+        <hr>
+        <!-- relationships -->
+        <div ng-repeat="rel in classService.getLastSelected().relations">
+            <label for="rel-type-{{$index}}">Type</label>
+            <select ng-model="rel.type"
+                    id="rel-type-{{$index}}"
+                    ng-options="t.value as t.label for t in relationService.types">
+            </select>
+            <br>
+            <label for="rel-target-{{$index}}">Target</label>
+            <select ng-model="rel.target"
+                    id="rel-target-{{$index}}"
+                    ng-options="c.id as c.type for c in classService.classes">
+            </select>
+            <br>
+            <input type="button" value="Remove relationship"
+                   ng-click="removeRelationShip(classService.getLastSelected(),rel)"/>
+            <hr>
+        </div>
+    </div>
+</script>
+<!-- class-partial.html -->
+<script type=text/ng-template id="class-partial.html">
+    <div class="uml-class" data-container="#uml-canvas"
+         ng-mousedown="pushFront(class)" ng-class='class.meta.class'
+         data-uml-class ng-repeat="class in classService.classes"
+         ng-controller='ClassController'>
+        <div class='uml-class-handle' title="{{helpService.HANDLE}}">&nbsp;</div>
+        <div class='uml-class-inner'>
+            <div class='uml-header' title="{{helpService.CELL_EDIT}}">
+                <div ng-model="class.type" contenteditable="true"></div>
+            </div>
+            <div class='uml-class-select'>
+                <input type='checkbox' ng-model='class.meta.selected'/></div>
+            <div class='clear'></div>
+            <ul class='uml-property-list' ng-show='config.display.showProperties'>
+                <li class='uml-cell uml-private' ng-repeat='prop in class.properties'>
+                    <div class='uml-cell-value'
+                         ng-model="prop.value" contenteditable="true">
+                    </div>
+                    <div class='uml-remove'><input type="button"
+                                                   value="-" ng-click='removeProp(prop)'/>
+                    </div>
+                    <div class="clear"></div>
+                </li>
+                <li><input type="button" value="+" ng-click='addProp(class)'/></li>
+            </ul>
+            <ul class='uml-method-list' ng-show='config.display.showMethods'>
+                <li title="{{helpService.CELL_EDIT}}"
+                    class='uml-cell' ng-repeat="meth in class.methods">
+                    <div class='uml-cell-value'
+                         ng-model="meth.value" contenteditable='true'></div>
+                    <div class="uml-remove">
+                        <input type="button"
+                               value="-"
+                               ng-click='removeMeth(meth)'/>
+                    </div>
+                    <div class="clear"></div>
+                </li>
+                <li><input type="button" value="+" ng-click='addMeth(class)'/></li>
+
+            </ul>
+        </div>
+    </div>
+</script>
 </body>
 </html>
