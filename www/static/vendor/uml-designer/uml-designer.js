@@ -5,8 +5,12 @@
  * less
  * underscore
  * jquery
+ * angularjs
  */
 /** crée une représentation de class UML **/
+var app = angular.module("umlDesigner",{});
+app.controller("menu",function($scope){});
+app.controller("canvas",function($scope){});
 var exemple_de_model = {
     type: "nom du type",
     position: {x: 0, y: 0},
@@ -119,34 +123,19 @@ UD.compiledUmlClassTemplate = _.template(UD.umlClassTemplate);
         $.each(this, function () {
             var editmode = false,
                 val,
-                $input,
                 $this = $(this);
             $this.on("click", function () {
                 if (editmode === false) {
-                    $this.attr('contenteditable',true);
-//                    val = $this.text();
-//                    $input = $("<input type='text'  >");
-//                    $input.val(val.trim());
-//                    $this.html($input);
+                    $this.attr('contenteditable', true);
                     editmode = true;
-                    $input.focus();
-                    $this.on("blur",function(event){
+                    $this.focus();
+                    $this.on("blur", function (event) {
                         if (editmode === true) {
-                        $this.attr('contenteditable',false)
-                        editmode=false;
-                        $this.trigger("cellunedit", $this, val);
+                            $this.attr('contenteditable', false)
+                            editmode = false;
+                            $this.trigger("cellunedit", $this, val);
                         }
                     });
-//                    $input.on("blur", function (event) {
-//                        if (editmode === true) {
-//                            $this.html($input.val());
-//                            editmode = false;
-//                            event.preventDefault();
-//                            $input.off("blur");
-//                            $input = null;
-//                            $this.trigger("cellunedit", $this, val);
-//                        }
-//                    });
                     $this.trigger("celledit", $this, val);
                 }
             });
