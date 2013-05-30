@@ -10,13 +10,35 @@
 @classBgColor: #DDD;
 @privateColor: #5A5A5A;
 @publicColor: #0A0A0A;
-.uml-canvas {
-  font-family: "Lucida Console", Monaco, monospace, sans-serif;
+
+.uml-font() {
+  font-family: "Ubuntu Mono", "Lucida Console", Monaco, monospace, sans-serif;
   font-size: 100%;
+}
+
+.default-gradient {
+  background: linear-gradient(to bottom, #ffffff 0%, #f3f3f3 14%, #ededed 16%);
+}
+
+.uml-interface {
+  .uml-font;
+  input {
+    .uml-font;
+  }
+
+}
+
+.uml-canvas {
+  .uml-font;
   position: relative;
-  width: 100%;
-  min-height: 500px;
+  width: auto;
+  min-height: 800px;
   background-color: @canvasBgColor;
+  input {
+    .uml-font;
+    border-collapse: collapse;
+    border: 1px solid #AAA;
+  }
   .uml-class {
     .draggie:hover {
 
@@ -31,17 +53,22 @@
     position: absolute;
     display: inline-block;
     border: @classBorder;
-    width: auto;
+
     .uml-class-handle {
     }
     .uml-class-inner {
       cursor: auto;
       background-color: #FCFCFC;
       border: @classBorder;
+
       .uml-header {
         font-weight: bold;
         padding: @classPadding;
-        border-bottom: @classBorder;
+        float:left;
+      }
+      .uml-class-select {
+        padding: @classPadding;
+        float: right;
       }
       ul {
         list-style: none;
@@ -50,8 +77,9 @@
       }
       li {
         .uml-cell {
-          input[type=text] {
-            width: auto;
+          input {
+            margin-left: -4px;
+            margin-bottom: -2px;
           }
         }
 
@@ -61,28 +89,22 @@
         &.uml-private {
           color: @privateColor;
         }
-        /**
-        &.uml-private:before {
-          content: "-";
-        }
-        &.uml-public:before {
-          content: "+";
-        }
-        &.uml-protected:before {
-          content: "#"
-        }
-        **/
       }
       .uml-property-list {
         padding: @classPadding;
         border-bottom: @classBorder;
-
       }
-      .uml-method-list {
-        padding: @classPadding;
 
+      .uml-method-list {
+        width: 150px;
+        padding: @classPadding;
       }
     }
 
   }
+}
+
+.clear {
+  clear: both;
+  border-bottom: @classBorder;
 }

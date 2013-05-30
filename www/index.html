@@ -3,45 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>UML DESIGNER</title>
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet/less" type="text/css" href="static/css/uml-designer.less"/>
 </head>
 <body>
 <div id="main">
+    <form class='uml-interface'>
+        <fieldset>
+            <legend>Interface</legend>
+            <input type="button" value="Add class" id="add-class"/>
+        </fieldset>
+    </form>
     <div id="uml-canvas" class="uml-canvas">
-        <div id="uml-class1" class="uml-class" draggable='true'>
-            <div class="uml-class-handle">&nbsp;</div>
-            <div class="uml-class-inner" draggable="false">
-                <div class="uml-header">
-                    ClassType
-                </div>
-                <ul class="uml-property-list">
-                    <li class='uml-cell uml-private'>
-                        - property 1
-                    </li>
-                    <li class='uml-cell uml-public'>
-                        - property 2
-                    </li>
-                    <li class='uml-cell uml-private'>
-                        + property 3
-                    </li>
-                    <li>&nbsp;</li>
-                </ul>
-                <ul class="uml-method-list">
-                    <li class='uml-cell uml-public'>
-                        - method 1
-                    </li>
-                    <li class='uml-cell uml-protected'>
-                        + method 2
-                    </li>
-                    <li class='uml-cell uml-private'>
-                        # method 3
-                    </li>
-                    <li class="uml-cell"
-                            >&nbsp;</li>
-
-                </ul>
-            </div>
-        </div>
     </div>
 </div>
 <script type="text/javascript" src="static/js/less.min.js">
