@@ -9,7 +9,7 @@
  */
 /** crée une représentation de class UML **/
 var app = angular.module("UmlDesigner", []);
-/** FR : gère la persistance des données */
+
 app.factory("StorageService", function ($window) {
     var ns = "UmlDesigner";
     /** @type {Storage} */
@@ -32,10 +32,15 @@ app.factory("RelationService", function () {
     var INHERITS = "inherits";
     var IMPLEMENTS = "implements";
     var HAS_A = "has a";
-    var typeIndex=0;
+    var typeIndex = 0;
     return{
-        // FR trouve un type par valeur
+        isValid: function (relation) {
+            // FR : vérifie si une relation est valide
+            return (typeof(relation.target) != undefined && relation.target != null
+                && typeof(relation.type) != undefined && relation.type != null);
+        },
         getTypeFromValue: function (value) {
+            // FR trouve un type par valeur
             for (var i = 0; i < this.types.length; i++) {
                 if (value === this.types[i].value) {
                     return this.types[i];
@@ -57,22 +62,13 @@ app.factory("ConfigService", function () {
         }
     }
 });
-/**
- * FR : gère les classes<br>
- * EN : manage classes
- */
 app.factory("HelpService", function () {
     return{
         "CELL_EDIT": "Click to edit,click outside to commit the changes",
         "HANDLE": "Drag the handle to move the Class diagram"
     }
 });
-/**
- * ClassService
- * manage classes
- * @name App.ClassService
- */
-app.factory("ClassService", function ($window, StorageService) {
+app.factory("ClassService", function ($window, StorageService, RelationService) {
     var classes = StorageService.getDatas("classes") || [];
     $window.onbeforeunload = function (event) {
         StorageService.saveDatas("classes", classes);
@@ -95,6 +91,65 @@ app.factory("ClassService", function ($window, StorageService) {
                 {value: '+ meth1:Array'}
             ],
             relations: []
+        },
+        isClassOnTop: function (c1, c2) {
+            var i = parseInt;
+            var predicat = (i(c1.meta.y) + i(c1.meta.height)) < c2.meta.y
+            return predicat;
+        },
+        isClassOnTheLeft: function (class1, class2) {
+            return class1.meta.x < class2.meta.x;
+        },
+        getAllValidRelations: function () {
+            var that = this;
+            var relations = this.getAllRelations().filter(function (relation) {
+                return RelationService.isValid(relation);
+            });
+            return relations;
+        },
+        getAllRelations: function () {
+            var allRelations = [];
+            var relations;
+            for (var i = 0; i < this.classes.length; i++) {
+                relations = this.classes[i].relations;
+                if (relations instanceof Array) {
+                    allRelations = allRelations.concat(relations);
+                }
+            }
+            return allRelations;
+        },
+        getTopAnchor: function (_class) {
+            var i = parseInt;
+            var meta = _class.meta;
+            return [i(meta.x) + i(meta.width) / 2, i(meta.y)];
+        },
+        getBottomAnchor: function (_class) {
+            var i = parseInt;
+            var meta = _class.meta;
+            return [i(meta.x) + i(meta.width) / 2, i(meta.y) + i(meta.height)];
+        },
+        getRightSideAnchor: function (_class) {
+            var i = parseInt;
+            var meta = _class.meta;
+            //return {x: i(meta.x) + i(meta.width), y: i(meta.y) + i(meta.height / 2)}
+            r = [i(meta.x) + i(meta.width), i(meta.y) + i(meta.height / 2)];
+            // console.log(r);
+            return r;
+        },
+        getLeftSideAnchor: function (_class) {
+            var i = parseInt;
+            var meta = _class.meta;
+            // return {x: i(meta.x), y: i(meta.y) + i(meta.height / 2)};
+            r = [i(meta.x), i(meta.y) + i(meta.height / 2)];
+            //  console.log(r);
+            return r;
+        },
+        getClassById: function (id) {
+            for (var i = 0; i < this.classes.length; i++) {
+                if (this.classes[i].id == id) {
+                    return this.classes[i];
+                }
+            }
         },
         makeId: function () {
             //
@@ -132,14 +187,12 @@ app.factory("ClassService", function ($window, StorageService) {
         },
         removeProp: function (_class, prop) {
             _class.properties.splice(_class.properties.indexOf(prop), 1);
-        }, removeMeth: function (_class, meth) {
+        },
+        removeMeth: function (_class, meth) {
             _class.methods.splice(_class.methods.indexOf(meth), 1);
         }
     };
 });
-/**
- * @name  App.MenuController
- */
 app.controller("MenuController", function ($scope, $log, $window, ClassService, ConfigService) {
     $scope.add = function () {
         ClassService.addNew();
@@ -162,7 +215,7 @@ app.controller("MenuController", function ($scope, $log, $window, ClassService, 
         if ($window.confirm("Delete All Classes ? ") === true) {
             ClassService.classes.splice(0, ClassService.classes.length);
         }
-    }
+    };
     $scope.toggleProperties = function () {
         ConfigService.display.showProperties = !ConfigService.display.showProperties;
     }
@@ -172,32 +225,38 @@ app.controller("MenuController", function ($scope, $log, $window, ClassService, 
 
     }
 });
-/**
- * @name App.CanvasController
- * FR : zone ou les classes sont affichées
- * EN : where the classes are displayed
- */
 app.controller("CanvasController", function ($scope, ClassService, ConfigService) {
     $scope.classService = ClassService;
     $scope.config = ConfigService;
 });
 app.controller("ClassEditController", function ($scope, ClassService, RelationService) {
+    /**
+     * FR : Gère le panneau d'édition de classe
+     */
     $scope.classService = ClassService;
     $scope.relationService = RelationService;
+    $scope.addProperty = function (_class) {
+        ClassService.addProp(_class);
+        return _class;
+    };
+    $scope.addMethod = function (_class) {
+        ClassService.addMeth(_class);
+    }
+    $scope.removeProperty = function (_class, prop) {
+        ClassService.removeProp(_class, prop);
+    };
+    $scope.removeMethod = function (_class, meth) {
+        ClassService.removeMeth(_class, meth);
+    };
     $scope.addRelationShip = function (_class) {
-        console.log(_class);
         if (!_class.relations)
             _class.relations = [];
-        _class.relations.push({type: null, target: null, description: null});
+        _class.relations.push({type: null, target: null, description: null, origin: _class.id});
     };
     $scope.removeRelationShip = function (_class, _relation) {
         _class.relations.splice(_class.relations.indexOf(_relation), 1);
     }
 });
-/**
- * @name App.ClassController
- * EN : each class instance has a class controller
- */
 app.controller("ClassController", function ($scope, ClassService, HelpService) {
     $scope.helpService = HelpService;
     $scope.pushFront = function (_class) {
@@ -220,17 +279,134 @@ app.controller("ClassController", function ($scope, ClassService, HelpService) {
         ClassService.removeMeth($scope.class, meth);
     }
 });
-/**
- * @name App.Directive.UmlCanvas
- */
-app.directive("umlCanvas", function ($log) {
+app.directive("umlCanvas", function ($timeout, $log, ClassService, RelationService) {
     return function (scope, element, attrs) {
-        $log.info("make uml canvas");
+        var timeoutId;
+        var lines = [];// les lignes à dessiner
+        var strokeColor = attrs['stroke-color'] || "black";
+        var $canvas;
+        // FR : créer une ligne
+        var makeLine = function (x1, y1, x2, y2) {
+            var p1 = new paper.Point(x1, y1);
+            var p2 = new paper.Point(x2, y2);
+            var line = new paper.Path.Line(p1, p2);
+            ///line.strokeColor = strokeColor;
+            line.selected = true;
+            return line
+        }
+        var updateLine = function (line, x1, y1, x2, y2) {
+            var segs = line.getSegments();
+            segs[0].getPoint().setX(x1);
+            segs[0].getPoint().setY(y1);
+            segs[1].getPoint().setX(x2);
+            segs[1].getPoint().setY(y2);
+            return line;
+        }
+        var createLines = function () {
+            lines = [];
+            var relations = ClassService.getAllValidRelations();
+            for (var i = 0; i < relations.length; i++) {
+                var relation = relations[i];
+                var originClass = ClassService.getClassById(relation.origin);
+                var relatedClass = ClassService.getClassById(relation.target);
+                if (ClassService.isClassOnTop(originClass, relatedClass)) {
+                    lines.push(makeLine.apply(null, [].concat(
+                        ClassService.getTopAnchor(relatedClass),
+                        ClassService.getBottomAnchor(originClass)
+                    )));
+                } else if (ClassService.isClassOnTop(relatedClass, originClass)) {
+                    lines.push(makeLine.apply(null, [].concat(
+                        ClassService.getTopAnchor(originClass),
+                        ClassService.getBottomAnchor(relatedClass)
+                    )));
+                }
+                else if (ClassService.isClassOnTheLeft(originClass, relatedClass)) {
+                    lines.push(makeLine.apply(null, [].concat(
+                        ClassService.getRightSideAnchor(originClass),
+                        ClassService.getLeftSideAnchor(relatedClass)
+                    )));
+                } else {
+                    lines.push(makeLine.apply(null, [].concat(
+                        ClassService.getRightSideAnchor(relatedClass),
+                        ClassService.getLeftSideAnchor(originClass)
+                    )));
+                }
+            }
+        };
+        var updateLines = function () {
+            if (lines.length <= 0)return;
+            var relations = ClassService.getAllValidRelations();
+            for (var i = 0; i < relations.length; i++) {
+                var relation = relations[i];
+                var originClass = ClassService.getClassById(relation.origin);
+                var relatedClass = ClassService.getClassById(relation.target);
+                if (ClassService.isClassOnTop(originClass, relatedClass)) {
+                    updateLine.apply(null, [lines[i]].concat(
+                        ClassService.getTopAnchor(relatedClass),
+                        ClassService.getBottomAnchor(originClass)
+                    ));
+                } else if (ClassService.isClassOnTop(relatedClass, originClass)) {
+                    updateLine.apply(null, [lines[i]].concat(
+                        ClassService.getTopAnchor(originClass),
+                        ClassService.getBottomAnchor(relatedClass)
+                    ));
+                }
+                else if (ClassService.isClassOnTheLeft(originClass, relatedClass)) {
+                    // la classe d'origine est sur la gauche
+
+                    updateLine.apply(null, [lines[i]].concat(
+                        ClassService.getRightSideAnchor(originClass),
+                        ClassService.getLeftSideAnchor(relatedClass)
+                    ));
+                } else {
+                    // la classe d'origine est sur la droite
+                    updateLine.apply(null, [lines[i]].concat(
+                        ClassService.getRightSideAnchor(relatedClass),
+                        ClassService.getLeftSideAnchor(originClass)
+                    ));
+                }
+            }
+        };
+
+        timeoutId = $timeout(function () {
+            $canvas = $('<canvas/>').attr("width", element.width())
+                .attr('height', element.height());
+            element.append($canvas);
+            paper.setup($canvas.get(0));
+            createLines();
+            scope.$watch("classService.classes", function (value) {
+                paper.view.remove();
+                paper.setup($canvas.get(0));
+                paper.view.onFrame = function () {
+                    updateLines();
+                };
+                createLines();
+            }, true);
+
+        }, 0);
+    }
+});
+app.directive("collapsr", function ($timeout) {
+    return function (scop, element, attrs) {
+        var $target = $(attrs['collapsr']);
+        var collapsed = attrs['collapsed'] || false;
+        $timeout(function () {
+            if ($target != null) {
+                element.on('click', function (e) {
+                    if (collapsed == false) {
+                        $target.hide();
+                        element.trigger("hidden", {target: $target});
+                    } else {
+                        $target.show();
+                        element.trigger("visisble", {target: $target});
+
+                    }
+                    collapsed = !collapsed;
+                });
+            }
+        }, 0);
     };
 });
-/**
- * Class Directive
- */
 app.directive("umlClass", function ($log, $timeout, ClassService) {
     return function (scope, element, attrs) {
         $timeout(function (event) {
@@ -247,6 +423,10 @@ app.directive("umlClass", function ($log, $timeout, ClassService) {
                         "left": scope['class'].meta.x}
                 );
             }
+            scope.$watch("class", function () {
+                scope['class'].meta.width = element.width();
+                scope['class'].meta.height = element.height();
+            }, true);
             element.data("draggabilly").on("dragMove", function (instance) {
                 scope['class'].meta.x = instance.position.x
                 scope['class'].meta.y = instance.position.y
@@ -254,10 +434,6 @@ app.directive("umlClass", function ($log, $timeout, ClassService) {
         }, 0);
     };
 });
-/**
- * Content editable
- * @see http://docs.angularjs.org/guide/forms
- */
 app.directive('contenteditable', function ContentEditable() {
     return {
         require: 'ngModel',
@@ -276,5 +452,5 @@ app.directive('contenteditable', function ContentEditable() {
             };
             elm.html(ctrl.$viewValue);
         }
-    }
+    };
 });

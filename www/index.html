@@ -5,20 +5,21 @@
     <title>UML DESIGNER</title>
     <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet/less" type="text/css" href="static/css/uml-designer.less"/>
-    <script type="text/javascript" src="static/js/less.min.js">
-    </script>
-    <script type="text/javascript" src='static/js/jquery.min.js'>
-    </script>
+    <script type="text/javascript" src="static/js/less.min.js"></script>
+    <script type="text/javascript" src='static/js/jquery.min.js'></script>
     <script type="text/javascript" src="static/js/underscore-min.js"></script>
     <script type="text/javascript" src="static/js/draggabilly.pkgd.min.js"></script>
+    <script type="text/javascript" src="static/js/paper.js"></script>
     <script type="text/javascript" src="static/js/angular.min.js"></script>
     <script type="text/javascript" src="static/vendor/uml-designer/uml-designer.js"></script>
 </head>
 <body>
-<div id="main">
-    <form class='uml-interface' ng-controller="MenuController">
-        <fieldset>
-            <legend>Interface</legend>
+<div class="container">
+    <div id="main">
+        <h2>UML Designer
+            <small>by mparaiso</small>
+        </h2>
+        <form class='uml-interface' ng-controller="MenuController">
             <input type="button" value="Add class" id="add-class" name="add-class" ng-click="add()"/>
             <input type="button" value="Delete selected" name="delete-class" id="delete-class"
                    ng-click="delete()"/>
@@ -26,15 +27,17 @@
             <input type="button" value="Inverse Selection" ng-click='inverseSelection()'/>
             <input type="button" value="Toggle Methods" ng-click='toggleMethods()'/>
             <input type="button" value="Toggle Properties" ng-click='toggleProperties()'/>
-        </fieldset>
-    </form>
-    <div ng-controller="CanvasController" class="uml-left">
-        <div id="uml-canvas" class="uml-canvas uml-float-none"
-             data-uml-canvas ng-include="'class-partial.html'">
+        </form>
+        <div class="separator"></div>
+
+        <div ng-controller="CanvasController" class="uml-left">
+            <div id="uml-canvas" class="uml-canvas uml-float-none" data-uml-canvas="uml-canvas"
+                 ng-include="'class-partial.html'">
+            </div>
         </div>
-    </div>
-    <div ng-controller="ClassEditController" class="uml-right">
-        <div ng-include="'class-edit-partial.html'"></div>
+        <div ng-controller="ClassEditController" class="uml-right">
+            <div ng-include="'class-edit-partial.html'"></div>
+        </div>
     </div>
 </div>
 </div>
@@ -42,33 +45,54 @@
 <!-- class edit partial -->
 <script type="text/ng-template" id="class-edit-partial.html">
     <div class="uml-class-edit">
-        <h3> {{classService.getLastSelected().type}}</h3>
+        <h3 contenteditable="true" ng-model="classService.getLastSelected().type"></h3>
+
+        <h4>Properties</h4>
+
+        <div ng-repeat="prop in classService.getLastSelected().properties">
+            <div class="input-text" contenteditable="true" ng-model="prop.value"></div>
+            <input type="button" value="-" ng-click="removeProperty(classService.getLastSelected(),prop)"/>
+        </div>
+        <div>
+            <input type="button" value="Add property" ng-click="addProperty(classService.getLastSelected())"/>
+        </div>
+
+        <h4>Methods</h4>
+
+        <div ng-repeat="meth in classService.getLastSelected().methods">
+            <div class="input-text" contenteditable="true" ng-model="meth.value"></div>
+            <input type="button" value="-" ng-click="removeMethod(classService.getLastSelected(),meth)"/>
+        </div>
+        <div>
+            <input type="button" value="Add method" ng-click="addMethod(classService.getLastSelected())"/>
+        </div>
         <h4>Relationships</h4>
 
         <div>
             <input type="button" value="Add relationship"
                    ng-click="addRelationShip(classService.getLastSelected())"/>
         </div>
-        <hr>
-        <!-- relationships -->
-        <div ng-repeat="rel in classService.getLastSelected().relations">
-            <label for="rel-type-{{$index}}">Type</label>
-            <select ng-model="rel.type"
-                    id="rel-type-{{$index}}"
-                    ng-options="t.value as t.label for t in relationService.types">
-            </select>
-            <br>
-            <label for="rel-target-{{$index}}">Target</label>
-            <select ng-model="rel.target"
-                    id="rel-target-{{$index}}"
-                    ng-options="c.id as c.type for c in classService.classes">
-            </select>
-            <br>
-            <input type="button" value="Remove relationship"
-                   ng-click="removeRelationShip(classService.getLastSelected(),rel)"/>
-            <hr>
-        </div>
-    </div>
+        <div class='separator'></di>
+            <!-- relationships -->
+            <div ng-repeat="rel in classService.getLastSelected().relations">
+                <label for="rel-type-{{$index}}">Type</label>
+                <select ng-model="rel.type"
+                        id="rel-type-{{$index}}"
+                        ng-options="t.value as t.label for t in relationService.types">
+                </select>
+                <br>
+                <label for="rel-target-{{$index}}">Target</label>
+                <select ng-model="rel.target"
+                        id="rel-target-{{$index}}"
+                        ng-options="c.id as c.type for c in classService.classes">
+                </select>
+                <br>
+                <input type="button" value="Remove relationship"
+                       ng-click="removeRelationShip(classService.getLastSelected(),rel)"/>
+
+                <div class='separator'></di>
+                </div>
+            </div>
 </script>
 <!-- class-partial.html -->
 <script type=text/ng-template id="class-partial.html">
