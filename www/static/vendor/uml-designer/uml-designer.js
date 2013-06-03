@@ -58,7 +58,8 @@ app.factory("ConfigService", function () {
     return{
         display: {
             showMethods: true,
-            showProperties: true
+            showProperties: true,
+            zoomFactor: 1
         }
     }
 });
@@ -194,6 +195,15 @@ app.factory("ClassService", function ($window, StorageService, RelationService) 
     };
 });
 app.controller("MenuController", function ($scope, $log, $window, ClassService, ConfigService) {
+    $scope.zoom = function (factor) {
+        var f = ConfigService.display.zoomFactor;
+        if ((f + factor) > 0 && (f + factor) < 2) {
+            angular.extend(ConfigService.display, {zoomFactor: (f + factor)});
+        }
+    };
+    $scope.zoomReset = function(){
+        ConfigService.display.zoomFactor = 1;
+    }
     $scope.add = function () {
         ClassService.addNew();
     }
@@ -259,6 +269,7 @@ app.controller("ClassEditController", function ($scope, ClassService, RelationSe
 });
 app.controller("ClassController", function ($scope, ClassService, HelpService) {
     $scope.helpService = HelpService;
+
     $scope.pushFront = function (_class) {
         var classes = ClassService.classes;
         for (var i = 0; i < classes.length; i++) {
@@ -279,7 +290,7 @@ app.controller("ClassController", function ($scope, ClassService, HelpService) {
         ClassService.removeMeth($scope.class, meth);
     }
 });
-app.directive("umlCanvas", function ($timeout, $log, ClassService, RelationService) {
+app.directive("umlCanvas", function ($timeout, $log, ClassService, $compile) {
     return function (scope, element, attrs) {
         var timeoutId;
         var lines = [];// les lignes à dessiner
@@ -302,9 +313,15 @@ app.directive("umlCanvas", function ($timeout, $log, ClassService, RelationServi
             segs[1].getPoint().setY(y2);
             return line;
         }
-        var createLines = function () {
+
+        var removeLines = function (lines) {
+            for (var i = 0; i < lines.length; i++) {
+                lines[i].remove();
+            }
+        }
+        var createLines = function (relations) {
+            removeLines(lines);
             lines = [];
-            var relations = ClassService.getAllValidRelations();
             for (var i = 0; i < relations.length; i++) {
                 var relation = relations[i];
                 var originClass = ClassService.getClassById(relation.origin);
@@ -333,9 +350,8 @@ app.directive("umlCanvas", function ($timeout, $log, ClassService, RelationServi
                 }
             }
         };
-        var updateLines = function () {
+        var updateLines = function (relations) {
             if (lines.length <= 0)return;
-            var relations = ClassService.getAllValidRelations();
             for (var i = 0; i < relations.length; i++) {
                 var relation = relations[i];
                 var originClass = ClassService.getClassById(relation.origin);
@@ -370,17 +386,19 @@ app.directive("umlCanvas", function ($timeout, $log, ClassService, RelationServi
 
         timeoutId = $timeout(function () {
             $canvas = $('<canvas/>').attr("width", element.width())
-                .attr('height', element.height());
+                .attr('height', element.height()).attr("data-zoomable", true);
+            //var fn = $compile($canvas);
+            //fn(scope);
             element.append($canvas);
             paper.setup($canvas.get(0));
-            createLines();
+            createLines(ClassService.getAllValidRelations());
+            paper.view.onFrame = function (d) {
+                if (d.count % 3 == 0) {
+                    updateLines(ClassService.getAllValidRelations());
+                }
+            };
             scope.$watch("classService.classes", function (value) {
-                paper.view.remove();
-                paper.setup($canvas.get(0));
-                paper.view.onFrame = function () {
-                    updateLines();
-                };
-                createLines();
+                createLines(ClassService.getAllValidRelations());
             }, true);
 
         }, 0);
@@ -406,6 +424,20 @@ app.directive("collapsr", function ($timeout) {
             }
         }, 0);
     };
+});
+app.directive("zoomable", function ($timeout, $log, ConfigService) {
+    return{
+        controller: function ($scope, ConfigService) {
+            $scope.configService = ConfigService;
+        },
+        link: function (scope, element, attrs, ctrl) {
+            $timeout(function () {
+                scope.$watch("configService", function (val) {
+                    $log.info('zoom', arguments);
+                    element.css("zoom", val.display.zoomFactor);
+                }, true);
+            }, 0);
+        }};
 });
 app.directive("umlClass", function ($log, $timeout, ClassService) {
     return function (scope, element, attrs) {

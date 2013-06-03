@@ -74,6 +74,7 @@ body {
     clear: both;
   }
   .front {
+    box-shadow:0 0 3px #42c0ff !important;
     z-index: 100;
   }
 
@@ -269,7 +270,7 @@ SCROLLBAR
 }
 
 ::-webkit-scrollbar-button {
-  background: darken(@lighterGray, 3%);
+  background: @lighterGray;
 }
 
 ::-webkit-scrollbar-track {
@@ -277,5 +278,5 @@ SCROLLBAR
 }
 
 ::-webkit-scrollbar-thumb {
-  background: darken(@lighterGray,(7%));
+  background: darken(@lightGray,5%);
 }

@@ -27,12 +27,15 @@
             <input type="button" value="Inverse Selection" ng-click='inverseSelection()'/>
             <input type="button" value="Toggle Methods" ng-click='toggleMethods()'/>
             <input type="button" value="Toggle Properties" ng-click='toggleProperties()'/>
+            <input type="button" value="Zoom +" ng-click='zoom(0.1)'/>
+            <input type="button" value="Zoom -" ng-click='zoom(-0.1)'/>
+            <input type="button" value="Reset zoom" ng-click='zoomReset()'/>
         </form>
         <div class="separator"></div>
 
         <div ng-controller="CanvasController" class="uml-left">
             <div id="uml-canvas" class="uml-canvas uml-float-none" data-uml-canvas="uml-canvas"
-                 ng-include="'class-partial.html'">
+                 ng-include="'class-partial.html'" >
             </div>
         </div>
         <div ng-controller="ClassEditController" class="uml-right">
@@ -97,6 +100,7 @@
 <!-- class-partial.html -->
 <script type=text/ng-template id="class-partial.html">
     <div class="uml-class" data-container="#uml-canvas"
+        ng-class="class.meta.class"
          ng-mousedown="pushFront(class)" ng-class='class.meta.class'
          data-uml-class ng-repeat="class in classService.classes"
          ng-controller='ClassController'>
