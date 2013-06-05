@@ -1,0 +1,38 @@
+.uml-canvas {
+  font-family: "Lucida Console", Monaco, monospace, sans-serif;
+  font-size: 100%;
+  position: relative;
+  width: 100%;
+  min-height: 500px;
+  background-color: #f9f9f9;
+}
+.uml-canvas .uml-class {
+  background-color: #fff;
+  position: absolute;
+  display: inline-block;
+  border: 1px solid #bbbbbb;
+  width: auto;
+}
+.uml-canvas .uml-class .uml-header {
+  font-weight: bold;
+  padding: 5px;
+  border-bottom: 1px solid #bbbbbb;
+}
+.uml-canvas .uml-class ul {
+  list-style: none;
+  list-style-type: none;
+  padding-left: 0;
+}
+.uml-canvas .uml-class .uml-property-list {
+  padding: 5px;
+  border-bottom: 1px solid #bbbbbb;
+}
+.uml-canvas .uml-class .uml-property-list ul li.uml-private:before {
+  content: "-";
+}
+.uml-canvas .uml-class .uml-property-list ul li.uml-public:before {
+  content: "+";
+}
+.uml-canvas .uml-class .uml-method-list {
+  padding: 5px;
+}

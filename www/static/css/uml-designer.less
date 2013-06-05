@@ -1,0 +1,212 @@
+/**
+ * Feuille de styles pour uml designer.
+ * @copyrights M.PARAISO <mparaiso@oneline.fr>
+ * All rights reserved.
+ */
+
+/// colors
+@white: #FFF;
+@lightBlack: #555;
+@lighterBlack: #888;
+@lighterGray: #EEE;
+@lightGray: #BBB;
+
+@classBgColorHover: #CCC;
+/// fonts
+@button-font: Verdana, sans-serif;
+@main-font: Arial, sans-serif;
+@editor-font: "Ubuntu Mono", "Lucida Console", Monaco, monospace, sans-serif;
+@lightGradient: linear-gradient(to bottom, lighten(@lighterGray, 20%) 0%,  @lighterGray  100%);
+/// class variables
+@classPadding: 5px;
+@classBorder: 1px solid @lightGray;
+
+/// mixins
+.unselectable() {
+
+}
+
+.selectable() {
+
+}
+
+.uml-font() {
+  font-family: @editor-font;
+  font-size: 100%;
+}
+
+.uml-font-medium() {
+  font-size: 90%;
+}
+
+.uml-font-small() {
+  font-size: 70%;
+}
+
+.default-gradient {
+  background: linear-gradient(to bottom, @white 0%, #f3f3f3 14%, #ededed 16%);
+}
+
+/// styles
+.ng-select {
+  border-collapse: collapse;
+  border: 1px solid @lightGray;
+}
+
+.container {
+  width: 100%;
+}
+
+.main {
+  margin: auto;
+  width: 960px;
+}
+
+body {
+  font-family: @main-font;
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: @lighterGray;
+  color: @lightBlack;
+
+  .clear {
+    clear: both;
+  }
+  .front {
+    box-shadow: 0 0 3px #42c0ff !important;
+    z-index: 100;
+  }
+
+  .back {
+    z-index: 50;
+  }
+  .uml-left {
+    background: url(../img/grid.png);
+    width: 80%;
+    float: left;
+    border-right: 1px solid darken(@lighterGray, 5%);
+    box-shadow: 1px 1px lighten(@lighterGray, 5%);
+  }
+
+  .uml-float-none {
+    display: block;
+    float: none;
+  }
+
+  .uml-right {
+    padding-left: 10px;
+    width: 200px;
+    float: left;
+
+  }
+}
+
+h2 {
+  padding: 10px 10px 7px 10px;
+  margin-top: 0;
+  color: #FFF;
+  background: linear-gradient(to right, #118 0%, #11C 100%);
+  font-size: 120%;
+  small {
+    font-size: 60%;
+  }
+}
+
+h4 {
+  margin-bottom: 5px;
+  padding-bottom: 0px;
+}
+
+canvas {
+  z-index: -10;
+}
+
+/**
+ * FORMS
+ */
+
+form {
+  padding: 0 10px;
+}
+
+label {
+  .uml-font-small;
+  font-family: @button-font;
+  min-width: 50px;
+  display: inline-block;
+}
+
+.input-text {
+  margin-left: 2px;
+  font-size: 80%;
+  display: inline-block;
+  padding: 2px;
+  width: 160px;
+  border: 1px solid @lightGray;
+}
+
+input {
+  &[type="text"] {
+    border: 1px solid @lightGray;
+  }
+  &[type="checkbox"] {
+    border-collapse: collapse;
+    border: 1px solid @lightGray;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+  }
+  &[type=button] {
+    font-family: @button-font;
+    .uml-font-small;
+    border-radius: 2px;
+    border: 1px solid darken(@lighterGray, 10%);
+    box-shadow: 0 1px lighten(@lighterGray, 10%), inset 0 1px lighten(@lightGray, 50%);
+    color: @lighterBlack;
+    background: @lightGradient;
+    padding: 4px 8px;
+    &:hover {
+      color: @lightBlack;
+      border: 1px solid @lightGray;
+    }
+  }
+}
+
+.separator {
+  border-bottom: 1px solid darken(@lighterGray, 5%);
+  box-shadow: 0 1px lighten(@lighterGray, 5%);
+  margin: 20px 0 0 0;
+}
+
+/// Designer Canvas
+.uml-canvas {
+  .uml-font;
+  .unselectable;
+  overflow: hidden;
+  position: relative;
+  width: auto;
+  min-height: 800px;
+  margin-top: 10px;
+}
+
+/**
+SCROLLBAR
+**/
+::-webkit-scrollbar {
+  background: white;
+  border-radius: 3px;
+  width: 15px;
+}
+
+::-webkit-scrollbar-button {
+  background: @lighterGray;
+}
+
+::-webkit-scrollbar-track {
+  background: @lighterGray;
+}
+
+::-webkit-scrollbar-thumb {
+  background: darken(@lightGray, 5%);
+}
