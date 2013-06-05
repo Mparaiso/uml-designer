@@ -25,7 +25,7 @@
 <div class="container">
     <div id="main">
         <h2>UML Designer
-            <small>by mparaiso</small>
+            <small>by<a href="https://github.com/Mparaiso">mparaiso</a>, contact mparaiso__at__online.fr</small>
         </h2>
         <form class='uml-interface' ng-controller="MenuController">
             <input type="button" value="Add class" id="add-class" name="add-class" ng-click="add()"/>
@@ -57,7 +57,7 @@
 <!-- class edit partial -->
 <script type="text/ng-template" id="class-edit-partial.html">
     <h4>Layers</h4>
-    <select name="object-layer" size="4" style="width:100%;border:1px solid gray;"
+    <select name="object-layer"  size="{{layerSelectSize}}" style="width:100%;border:1px solid gray;"
             ng-model="selectionService.lastSelected" id="object-layer"
             ng-options="c as c.type for c in classService.classes"></select>
 

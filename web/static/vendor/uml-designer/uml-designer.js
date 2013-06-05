@@ -1,14 +1,13 @@
-// *
-//  * UML DESIGNER
-//  * @copyrights MPARAISO <mparaiso@online.fr>
-//  * @dependencies :
-//  * less
-//  * underscore
-//  * jquery
-//  * angularjs
-
-// crée une représentation de class UML 
-
+/**
+ * UML DESIGNER
+ * @copyrights MPARAISO <mparaiso@online.fr>
+ *
+ * UML designer helps developpers create UML diagrams in the browser.
+ * it is built with HTML5
+ * with UML designer , developpers no longer need to use native tools
+ * to create diagrams and can design diagrams on any HTML5 ready device
+ *
+ */
 var app = angular.module("UmlDesigner", []);
 
 app.factory("SelectionService", function (StorageService) {
@@ -277,8 +276,12 @@ app.controller("ClassEditController", function ($scope, ClassService, RelationSe
     $scope.classService = ClassService;
     $scope.relationService = RelationService;
     $scope.selectionService = SelectionService;
+    $scope.layerSelectSize  = ClassService.classes.length;
+    $scope.$watch("classService.classes",function(){
+        $scope.layerSelectSize = Math.min( ClassService.classes.length,10);
+    },true);
     $scope.selectClass = function (_class) {
-        ClassService.select(_class);
+       ClassService.select(_class);
     };
     $scope.addProperty = function (_class) {
         ClassService.addProp(_class);
