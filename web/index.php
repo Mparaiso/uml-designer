@@ -25,7 +25,7 @@
 <div class="container">
     <div id="main">
         <h2>UML Designer
-            <small>by<a href="https://github.com/Mparaiso">mparaiso</a>, contact mparaiso__at__online.fr</small>
+            <small>by <a href="https://github.com/Mparaiso">mparaiso</a>, contact mparaiso at online.fr</small>
         </h2>
         <form class='uml-interface' ng-controller="MenuController">
             <input type="button" value="Add class" id="add-class" name="add-class" ng-click="add()"/>
