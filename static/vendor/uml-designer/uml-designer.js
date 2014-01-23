@@ -1,13 +1,16 @@
+/*jslint white:true, browser:true */
+/*global angular */
 /**
  * UML DESIGNER
  * @copyrights MPARAISO <mparaiso@online.fr>
  *
  * UML designer helps developpers create UML diagrams in the browser.
- * it is built with HTML5
+ * it is built  with HTML5
  * with UML designer , developpers no longer need to use native tools
  * to create diagrams and can design diagrams on any HTML5 ready device
  *
  */
+"use strict";
 var app = angular.module("UmlDesigner", []);
 
 app.factory("SelectionService", function (StorageService) {
@@ -17,9 +20,9 @@ app.factory("SelectionService", function (StorageService) {
     };
 });
 app.factory("StorageService", function ($window) {
-    var ns = "UmlDesigner";
+    var storage,ns = "UmlDesigner";
     /** @type {Storage} */
-    var storage = $window.localStorage;
+    storage = $window.localStorage;
     return{
         clearDatas: function () {
             storage.clear();
