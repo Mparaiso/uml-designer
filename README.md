@@ -7,7 +7,7 @@ author : MPARAISO <mparaiso@online.fr>
 
 license : GPL
 
-demo: http://umldesigner.herokuapp.com/
+demo: http://uml-designer.herokuapp.com/
 
 Design class diagrams in the browser ! With UML designer , you no longer need
 native software to design beautifull class diagrams, you can do it everywhere, on every os.
